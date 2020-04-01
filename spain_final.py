@@ -1,96 +1,61 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
-#!/usr/bin/env python
-# coding: utf-8
+import requests
+import json
+headers = {
+    'Content-Type': 'application/json',
+    'X-Api-Key': 'i1aIuZ5mV6HT24piafq1RBGAt8ckxkpcpkruvWir',
+}
 
-# In[3]:
-while True:
-
-    try:
-        import pandas as pd
-        import json
-        import urllib.parse
-        import time
-        import requests as rq
-        import base64
-
-        def get_oauth_token():
-            url = "https://api.idealista.com/oauth/token"    
-            auth = 'aHVvOWlzczJvaXlnd2YzNzVvYzg2ang0cGhkdnlqbWM6MENZdXZsOWN2aWVo'
-            headers = {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' ,'Authorization' : 'Basic ' + auth}
-            params = urllib.parse.urlencode({'grant_type':'client_credentials'})
-            response = rq.post(url,headers = headers, params=params)
-            response = response.json()
-            access_token= response['access_token']
-            return access_token
-
-        def search_api(token, url):  
-            headers = {'Content-Type': 'Content-Type: multipart/form-data;', 'Authorization' : 'Bearer ' + token}
-            response = rq.post(url, headers = headers)
-            response = response.json()
-            return response
-
-        locale = 'es' #es means SPAIN
-        language = 'es' #es means SPAIN
-        country = 'es' #es means SPAIN
-        max_items = '50' #i we can't go more than 50 it's in the documentation
-        operation = 'sale' 
-        center = '40.4167,3.7492' #coordinates for spain 
-        distance = '60000'
-        propertyType= 'homes'
-
-        #you can also add new parameters here like the above ones
+raw_data={
+"latitude": 40.3973892,
+"longitude": -3.6421778,
+"operation": 1,
+"typology": 1,
+"subtypology":"",
+"area":100,
+"areamargin":"1",
+"agesince":1970,
+"ageuntil":"",
+"roomnumber":3,
+"bathnumber":"",
+"withcadastralreferenceonly":"",
+"distance":1000
+}
+response = requests.post("https://www.idealista.com/data/ws/witnesses", headers=headers, data=json.dumps(raw_data))
+l = json.loads(response.text)[0]
 
 
 
-        df_tot = pd.DataFrame()
-        limit = 2
+hostname = 'localhost'
+username = 'user'
+password = '123789456'
+database = 'spain_db'
 
-        for i in range(1,limit):
-            url = ('https://api.idealista.com/3.5/'+country+'/search?operation='+operation+#"&locale="+locale+
-                   '&maxItems='+max_items+
-                   '&center='+center+
-                   '&distance='+distance+
-                   '&propertyType='+propertyType+
-                   #add new parameters here liike examples
-                   '&language='+language)  
-            a = search_api(get_oauth_token(), url)
-            df = pd.DataFrame.from_dict(a['elementList'])
-            df_tot = pd.concat([df_tot,df])
+# Simple routine to run a query on a database and print the results:
+def doQuery( conn ) :
+    cur = conn.cursor()
+    cur.execute('CREATE TABLE IF NOT EXISTS spain_data(id INTEGER PRIMARY KEY, ad_id TEXT, ad_state TEXT, ad_operation TEXT,                 ad_typology TEXT, ad_propertytype TEXT, ad_price TEXT, ad_unitprice TEXT, ad_activationdate TEXT, ad_deactivationdate TEXT,                ad_modificationdate TEXT, ad_latitude TEXT, ad_longitude TEXT, ad_layerlocation TEXT, ad_province TEXT, ad_town TEXT,                ad_postalcode TEXT, ad_streettype TEXT, ad_streetname TEXT, ad_streetnumber TEXT, ad_floornumber TEXT,                ad_addressvisible TEXT, ad_subtypology TEXT, ad_area TEXT, ad_builttype TEXT, ad_roomnumber TEXT, ad_bathnumber TEXT,                ad_flatlocation TEXT, ad_haslift TEXT, ad_hasparkingspace TEXT, ad_hasboxroom TEXT, ad_hasswimmingpool TEXT,                 ad_urlactive TEXT, ad_urlinactive TEXT, newdevelopment_commercialname TEXT, newdevelopment_fromprice TEXT,                 newdevelopment_averageprice TEXT, adstats_visits TEXT, adstats_sendtofriend TEXT, adstats_savedasfavorite TEXT,                adstats_daysonmarket TEXT, adstats_contactsbyemail TEXT, estate_cadastralroot TEXT, property_cadastralreference TEXT,                property_builtdate TEXT, property_area TEXT, property_use TEXT, censustract_id TEXT, censustract_town_id TEXT,                layerlocation_area TEXT, layerlocation_population TEXT, address_certainty TEXT, cadastral_certainty TEXT, distance TEXT)')
+    conn.commit()
 
-        df_tot = df_tot.reset_index()
+    cur.execute("INSERT INTO spain_data VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,                                        %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",                (l['id'], l['ad_id'], l['ad_state'], l['ad_operation'], l['ad_typology'], l['ad_propertytype'], l['ad_price'], l['ad_unitprice'], l['ad_activationdate'], 
+                 l['ad_deactivationdate'], l['ad_modificationdate'], l['ad_latitude'], l['ad_longitude'], l['ad_layerlocation'], l['ad_province'], l['ad_town'], 
+                 l['ad_postalcode'], l['ad_streettype'], l['ad_streetname'], l['ad_streetnumber'], l['ad_floornumber'], l['ad_addressvisible'], 
+                 l['ad_subtypology'], l['ad_area'], l['ad_builttype'], l['ad_roomnumber'], l['ad_bathnumber'], l['ad_flatlocation'], l['ad_haslift'], 
+                 l['ad_hasparkingspace'], l['ad_hasboxroom'], l['ad_hasswimmingpool'], l['ad_urlactive'], l['ad_urlinactive'],
+                 l['newdevelopment_commercialname'], l['newdevelopment_fromprice'], l['newdevelopment_averageprice'], l['adstats_visits'], 
+                 l['adstats_sendtofriend'], l['adstats_savedasfavorite'], l['adstats_daysonmarket'], l['adstats_contactsbyemail'], l['estate_cadastralroot'],
+                 l['property_cadastralreference'], l['property_builtdate'], l['property_area'], l['property_use'], l['censustract_id'], l['censustract_town_id'],
+                 l['layerlocation_area'], l['layerlocation_population'], l['address_certainty'], l['cadastral_certainty'], l['distance']))
+    conn.commit()
+    print('commited')
 
-        from mysql.connector import (connection)
-        from datetime import datetime
-
-        conn = connection.MySQLConnection(user='GxZgyPCemh', password='KsjiYgg7ZJ',
-                                         host='remotemysql.com',
-                                         database='GxZgyPCemh')
-        cur = conn.cursor()
-        # cur.execute('SHOW TABLES')
-        # print(cur.fetchall())
-        # cur.execute('DROP TAB
-        cur.execute('CREATE TABLE IF NOT EXISTS SPAIN (id int NOT NULL AUTO_INCREMENT, datetime TEXT, PRIMARY KEY (id),               index1 TEXT, propertyCode TEXT, thumbnail TEXT, externalReference TEXT, numPhotos TEXT,               floor TEXT, price TEXT, propertyType TEXT, operation TEXT, size TEXT, exterior TEXT,               rooms TEXT, bathrooms TEXT, address TEXT, province TEXT, municipality TEXT, district TEXT,               country TEXT, latitude TEXT, longitude TEXT, showAddress TEXT, url TEXT, distance TEXT,               hasVideo TEXT, status TEXT, newDevelopment TEXT, hasLift TEXT, priceByArea TEXT,               detailedType TEXT, suggestedTexts TEXT, hasPlan TEXT, has3DTour TEXT, has360 TEXT,parkingSpace TEXT)')
-        for index, row in df_tot.iterrows():
-
-            cur.execute('INSERT INTO SPAIN VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,                                                    %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',                    (None,datetime.now(),                    str(row['index']),str(row['propertyCode']),str(row['thumbnail']),str(row['externalReference']),str(row['numPhotos']),str(row['floor']),                     str(row['price']),str(row['propertyType']),str(row['operation']),str(row['size']),str(row['exterior']),str(row['rooms']),str(row['bathrooms']),                     str(row['address']),str(row['province']),str(row['municipality']),str(row['district']),str(row['country']),str(row['latitude']),str(row['longitude']),                     str(row['showAddress']),str(row['url']),str(row['distance']),str(row['hasVideo']),str(row['status']),str(row['newDevelopment']),                     str(row['hasLift']),str(row['priceByArea']),str(row['detailedType']),str(row['suggestedTexts']),str(row['hasPlan']),str(row['has3DTour']),                     str(row['has360']),str(row['parkingSpace'])))
-            conn.commit()
-
-        cur.execute('SELECT * FROM SPAIN')
-        conn.close()
-        print('success')
-        time.sleep(43201)
-    except Exception as e:
-        print('Exception ', e)
-        time.sleep(43202)
-
-
-# In[ ]:
-
-
-
-
+import psycopg2
+myConnection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
+print('connection sucessfull')
+doQuery( myConnection )
+myConnection.close()
