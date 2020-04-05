@@ -24,7 +24,7 @@ while True:
         "distance":1000
         }
         response = requests.post("https://www.idealista.com/data/ws/witnesses", headers=headers, data=json.dumps(raw_data))
-        l = json.loads(response.text)[0]
+        list = json.loads(response.text)
 
 
 
@@ -48,28 +48,29 @@ while True:
                         property_builtdate TEXT, property_area TEXT, property_use TEXT, censustract_id TEXT, censustract_town_id TEXT,\
                         layerlocation_area TEXT, layerlocation_population TEXT, address_certainty TEXT, cadastral_certainty TEXT, distance TEXT)')
             conn.commit()
-        t
-            key=cur.execute('SELECT unique_key FROM spain_data ORDER BY unique_key DESC LIMIT 1') # Last key 
-            key = cur.fetchall()
-            print('Getting the last key from last_key: ',key,type(key))
-            if key ==[]:
-                key=[(0,'')]
-                print('first time ',e)
-            key = key[0][0]
-            key+=1
-            cur.execute("INSERT INTO spain_data VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\
-                                                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",\
-                        (key,l['id'], l['ad_id'], l['ad_state'], l['ad_operation'], l['ad_typology'], l['ad_propertytype'], l['ad_price'], l['ad_unitprice'], l['ad_activationdate'], 
-                         l['ad_deactivationdate'], l['ad_modificationdate'], l['ad_latitude'], l['ad_longitude'], l['ad_layerlocation'], l['ad_province'], l['ad_town'], 
-                         l['ad_postalcode'], l['ad_streettype'], l['ad_streetname'], l['ad_streetnumber'], l['ad_floornumber'], l['ad_addressvisible'], 
-                         l['ad_subtypology'], l['ad_area'], l['ad_builttype'], l['ad_roomnumber'], l['ad_bathnumber'], l['ad_flatlocation'], l['ad_haslift'], 
-                         l['ad_hasparkingspace'], l['ad_hasboxroom'], l['ad_hasswimmingpool'], l['ad_urlactive'], l['ad_urlinactive'],
-                         l['newdevelopment_commercialname'], l['newdevelopment_fromprice'], l['newdevelopment_averageprice'], l['adstats_visits'], 
-                         l['adstats_sendtofriend'], l['adstats_savedasfavorite'], l['adstats_daysonmarket'], l['adstats_contactsbyemail'], l['estate_cadastralroot'],
-                         l['property_cadastralreference'], l['property_builtdate'], l['property_area'], l['property_use'], l['censustract_id'], l['censustract_town_id'],
-                         l['layerlocation_area'], l['layerlocation_population'], l['address_certainty'], l['cadastral_certainty'], l['distance']))
-            conn.commit()
-            print('commited')
+            
+            for l in list:
+                key=cur.execute('SELECT unique_key FROM spain_data ORDER BY unique_key DESC LIMIT 1') # Last key 
+                key = cur.fetchall()
+                print('Getting the last key from last_key: ',key,type(key))
+                if key ==[]:
+                    key=[(0,'')]
+                    print('first time ',e)
+                key = key[0][0]
+                key+=1
+                cur.execute("INSERT INTO spain_data VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\
+                                                    %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",\
+                            (key,l['id'], l['ad_id'], l['ad_state'], l['ad_operation'], l['ad_typology'], l['ad_propertytype'], l['ad_price'], l['ad_unitprice'], l['ad_activationdate'], 
+                             l['ad_deactivationdate'], l['ad_modificationdate'], l['ad_latitude'], l['ad_longitude'], l['ad_layerlocation'], l['ad_province'], l['ad_town'], 
+                             l['ad_postalcode'], l['ad_streettype'], l['ad_streetname'], l['ad_streetnumber'], l['ad_floornumber'], l['ad_addressvisible'], 
+                             l['ad_subtypology'], l['ad_area'], l['ad_builttype'], l['ad_roomnumber'], l['ad_bathnumber'], l['ad_flatlocation'], l['ad_haslift'], 
+                             l['ad_hasparkingspace'], l['ad_hasboxroom'], l['ad_hasswimmingpool'], l['ad_urlactive'], l['ad_urlinactive'],
+                             l['newdevelopment_commercialname'], l['newdevelopment_fromprice'], l['newdevelopment_averageprice'], l['adstats_visits'], 
+                             l['adstats_sendtofriend'], l['adstats_savedasfavorite'], l['adstats_daysonmarket'], l['adstats_contactsbyemail'], l['estate_cadastralroot'],
+                             l['property_cadastralreference'], l['property_builtdate'], l['property_area'], l['property_use'], l['censustract_id'], l['censustract_town_id'],
+                             l['layerlocation_area'], l['layerlocation_population'], l['address_certainty'], l['cadastral_certainty'], l['distance']))
+                conn.commit()
+                print('commited')
 
         import psycopg2
         myConnection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
