@@ -48,11 +48,11 @@ while True:
                         property_builtdate TEXT, property_area TEXT, property_use TEXT, censustract_id TEXT, censustract_town_id TEXT,\
                         layerlocation_area TEXT, layerlocation_population TEXT, address_certainty TEXT, cadastral_certainty TEXT, distance TEXT)')
             conn.commit()
-            try:
-                key=cur.execute('SELECT unique_key FROM spain_data ORDER BY unique_key DESC LIMIT 1') # Last key 
-                key = cur.fetchall()
-                print('Getting the last key from last_key: ',key,type(key))
-            except Exception as e:
+        t
+            key=cur.execute('SELECT unique_key FROM spain_data ORDER BY unique_key DESC LIMIT 1') # Last key 
+            key = cur.fetchall()
+            print('Getting the last key from last_key: ',key,type(key))
+            if key ==[]:
                 key=[(0,'')]
                 print('first time ',e)
             key = key[0][0]
